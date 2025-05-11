@@ -1,0 +1,61 @@
+services:
+  greptimedb:
+    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/greptime/greptimedb-dev:dev-20250512-1747019751-787a5063
+    command: standalone start --http-addr=0.0.0.0:4000 --rpc-addr=0.0.0.0:4001 --mysql-addr=0.0.0.0:4002 --postgres-addr 0.0.0.0:4003
+    ports:
+      - 4000:4000
+      - 4001:4001
+      - 4002:4002
+      - 4003:4003
+    networks:
+      - demo-network
+    volumes:
+      - ./greptimedb_data:/greptimedb_data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:4000/health" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+  
+  grafana:
+    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/grafana/grafana:11.6.0
+    ports:
+      - 3000:3000
+    networks:
+      - demo-network
+    volumes:
+      - ./grafana_provisioning:/etc/grafana/provisioning
+    depends_on:
+      greptimedb:
+        condition: service_healthy
+    restart: always
+  
+  vector:
+    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/timberio/vector:0.46.1-debian
+    networks:
+      - demo-network
+    command: "-c /etc/vector/vector.yaml"
+    volumes:
+      - ./vector/vector.yaml:/etc/vector/vector.yaml
+      - logs:/logs
+
+  hotrod:
+    image: registry.cn-hangzhou.aliyuncs.com/zyyinternal/jaegertracing-example-hotrod:dev-20250512-1747019799
+    ports:
+      - 8080:8080
+    networks:
+      - demo-network
+    depends_on:
+      greptimedb:
+        condition: service_healthy
+    volumes:
+      - logs:/logs
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://greptimedb:4000/v1/otlp
+      - OTEL_EXPORTER_OTLP_TRACES_HEADERS=x-greptime-pipeline-name=greptime_trace_v1
+
+networks:
+  demo-network:
+
+volumes:
+  logs:
