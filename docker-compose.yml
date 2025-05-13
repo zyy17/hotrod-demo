@@ -24,6 +24,7 @@ services:
     networks:
       - demo-network
     volumes:
+      - ./grafana_data:/var/lib/grafana
       - ./grafana_provisioning:/etc/grafana/provisioning
     depends_on:
       greptimedb:
