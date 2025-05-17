@@ -10,7 +10,7 @@ services:
     networks:
       - demo-network
     volumes:
-      - ./greptimedb_data:/greptimedb_data
+      - ./data/greptimedb_data:/greptimedb_data
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://127.0.0.1:4000/health" ]
       interval: 3s
@@ -24,8 +24,9 @@ services:
     networks:
       - demo-network
     volumes:
-      - ./grafana_data:/var/lib/grafana
-      - ./grafana_provisioning:/etc/grafana/provisioning
+      - ./data/grafana_data:/var/lib/grafana
+      - ./grafana/grafana_provisioning:/etc/grafana/provisioning
+      - ./grafana/grafana_plugins:/var/lib/grafana/plugins 
     depends_on:
       greptimedb:
         condition: service_healthy

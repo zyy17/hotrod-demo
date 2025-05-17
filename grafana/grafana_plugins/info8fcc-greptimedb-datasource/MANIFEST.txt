@@ -1,0 +1,50 @@
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
+
+{
+  "manifestVersion": "2.0.0",
+  "signatureType": "private",
+  "signedByOrg": "info8fcc",
+  "signedByOrgName": "greptime",
+  "rootUrls": [
+    "http://localhost:3000/"
+  ],
+  "plugin": "info8fcc-greptimedb-datasource",
+  "version": "2.0.1",
+  "time": 1747042066237,
+  "keyId": "7e4d0c6a708866e7",
+  "files": {
+    "go_plugin_build_manifest": "be4052736a10582b3645c669ad007537183f19418d688d71ce7f05df5f9c0532",
+    "LICENSE": "465811f645e3539e1b171f2273d4ea67ee482e42607eadfffe2165b01ecbb1e1",
+    "dashboards/cluster-analysis.json": "7f83d4d09cc6f045768f5bf47485b864dd6da03094f8607808dec77cb96902e5",
+    "dashboards/query-analysis.json": "1b2006a3f4142e512e50156a7d2fd8cf03a178019aaccc964c0283c8559298b3",
+    "dashboards/system-dashboards.json": "a47eb47b9cd0bea82a7276fc805bba214164e677f68fb1e821b0278b17bee7f0",
+    "dashboards/opentelemetry-clickhouse.json": "1a710a750988fdcd7d788e8aef001c1fb106e00253ea0208c2963d9a71d717e8",
+    "dashboards/data-analysis.json": "71695f08dfad47f3d4da4c2d331a09eb8fe5789520d5566fffeecd626079caa1",
+    "gpx_greptimedb_linux_amd64": "a5283714a64db320fa58bd7e15f9a6d6e2cb16993fe4d925cfbc653c70869e93",
+    "CHANGELOG.md": "63b0b96ebb4ec80c58ec91963c99423f6baa8c06a7077bc822a0bfeb57ef56e1",
+    "gpx_greptimedb_darwin_arm64": "10b6b7ab20595c42176f7398820d5d9ec064ff25582b00d7fa3dc562b156dd99",
+    "README.md": "791e7a4f290e8ef3d9d7d7090c7ff603e8b79415751c9579ea2f8bb0a19a565d",
+    "gpx_greptimedb_darwin_amd64": "37e461ce7fdb701784874d41af1839a3ac5527cfa9af23d5e3b620815025bb76",
+    "module.js.map": "a740fd10271721641a48d98cae51e9399a4382f436ed6ad922708724181df65a",
+    "module.js": "716cbd2c2ee7fbe212d96d0b0a5b263d61b6933c25560f034581cc6fdad7bb29",
+    "img/logo.svg": "838199055d86584ff105e5e91013203a6acb7d3f2061ae27678786125ab11f09",
+    "img/greptimedb_logo.svg": "4e3da31a5eeb02659d90539ffd428b032f2c3d6652b57d8ba1b96553d917a363",
+    "gpx_greptimedb_linux_arm64": "d52f6c92aae6fbdfedb6dd1d5a0d2a7874b6a0e8417922309b4363cb260aeb75",
+    "gpx_greptimedb_windows_amd64.exe": "1b734bc138815e8f9c1f8558fabdaef2ca4d36a6f866dbd18771b1a94965a07d",
+    "plugin.json": "999a9a3d5ab09997e1f835ef546c4473f312e7ab4ffb2c5002fa370d9602f066",
+    "gpx_greptimedb_linux_arm": "3169b8f7e67ef63e6a8b9c0670bd40a2f445f22efe2318b80988017e7d80478d"
+  }
+}
+-----BEGIN PGP SIGNATURE-----
+Version: OpenPGP.js v4.10.11
+Comment: https://openpgpjs.org
+
+wrkEARMKAAYFAmghvxIAIQkQfk0ManCIZucWIQTzOyW2kQdOhGNlcPN+TQxq
+cIhm5zbCAgkAmRjdt8Rwuxm8I6Y0gxBcOMQ0JQPSjJUgVPDwymP34cA0ftid
+fqM+MK2xIE1Bnj+mjcCbv6mx7HWbPOljLyDXDZsCCQGAVmIHnBuv3LQaKblv
+4N+M6QHFcQ7zaQPhnRybt/k9hxNYHYT58/MPwzTvotcejXGJzoI/BhNQCdvj
+EgbyHso/4A==
+=O1O3
+-----END PGP SIGNATURE-----

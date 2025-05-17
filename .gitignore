@@ -1,3 +1,4 @@
 greptimedb_data/
 .DS_Store
 grafana_data/
+data/
