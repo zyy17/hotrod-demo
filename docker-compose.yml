@@ -1,6 +1,6 @@
 services:
   greptimedb:
-    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/greptime/greptimedb-dev:dev-20250512-1747019751-787a5063
+    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/greptime/greptimedb-dev:dev-20250515-1747289984-14b655ea
     command: standalone start --http-addr=0.0.0.0:4000 --rpc-addr=0.0.0.0:4001 --mysql-addr=0.0.0.0:4002 --postgres-addr 0.0.0.0:4003
     ports:
       - 4000:4000
@@ -17,6 +17,18 @@ services:
       timeout: 3s
       retries: 5
   
+  create_hotrod_logs_table:
+    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/greptime/greptime-tool:20250421-94c4b8d
+    networks:
+      - demo-network
+    depends_on:
+      greptimedb:
+        condition: service_healthy
+    volumes:
+      - ./greptimedb:/initdb
+    command: sh -c "mysql -h greptimedb -P 4002 < /initdb/create-hotrod-logs-table.sql"
+    init: yes
+      
   grafana:
     image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/grafana/grafana:11.6.0
     ports:
@@ -42,7 +54,7 @@ services:
       - logs:/logs
 
   hotrod:
-    image: registry.cn-hangzhou.aliyuncs.com/zyyinternal/jaegertracing-example-hotrod:dev-20250512-1747019799
+    image: registry.cn-hangzhou.aliyuncs.com/zyyinternal/jaegertracing-example-hotrod:dev-20250518-1747561410
     ports:
       - 8080:8080
     networks:
@@ -55,6 +67,23 @@ services:
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://greptimedb:4000/v1/otlp
       - OTEL_EXPORTER_OTLP_TRACES_HEADERS=x-greptime-pipeline-name=greptime_trace_v1
+    healthcheck:
+      test: [ "CMD", "sh", "-c", "curl -f http://127.0.0.1:8080/ && curl -f http://127.0.0.1:8080/dispatch?customer=456&nonse=0.0899994583024346" ]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+  
+  create_flows:
+    image: greptime-registry.cn-hangzhou.cr.aliyuncs.com/greptime/greptime-tool:20250421-94c4b8d
+    networks:
+      - demo-network
+    depends_on:
+      hotrod:
+        condition: service_healthy
+    volumes:
+      - ./greptimedb:/initdb
+    command: sh -c "sleep 3 && sh /initdb/create-flows.sh"
+    init: yes
 
 networks:
   demo-network:
