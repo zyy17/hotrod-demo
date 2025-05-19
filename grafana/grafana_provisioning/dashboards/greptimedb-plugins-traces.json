@@ -1,0 +1,1784 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": {
+            "type": "grafana",
+            "uid": "-- Grafana --"
+          },
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "type": "dashboard"
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 4,
+    "links": [],
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 7,
+        "panels": [],
+        "title": "应用列表",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "left",
+              "cellOptions": {
+                "type": "auto",
+                "wrapText": false
+              },
+              "filterable": false,
+              "inspect": false,
+              "minWidth": 50
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "应用名称"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 166
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "每秒请求数"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 160
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "错误率"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 143
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 8,
+          "w": 24,
+          "x": 0,
+          "y": 1
+        },
+        "id": 4,
+        "options": {
+          "cellHeight": "lg",
+          "footer": {
+            "countRows": false,
+            "enablePagination": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "每秒请求数"
+            }
+          ]
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT \n    t1.service_name AS \"应用名称\",\n    CAST(t1.total_count AS FLOAT) / 60 AS \"每秒请求数\",\n    CONCAT(ROUND(t1.error_count / t1.total_count * 100.0, 2), '%') AS \"错误率\",\n    CONCAT(ROUND(t1.avg_latency_nano / 1000000.0, 2), ' ms') AS \"平均延迟\"\nFROM \n    __otel_traces_services_red_metrics_1m t1\nWHERE \n    t1.time_window_1m = (\n        SELECT MAX(t2.time_window_1m)\n        FROM __otel_traces_services_red_metrics_1m t2\n        WHERE t2.service_name = t1.service_name AND (time_window_1m >= $__fromTime AND time_window_1m <= $__toTime)\n    )\nORDER BY \n    t1.service_name;\n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "应用列表",
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 9
+        },
+        "id": 8,
+        "panels": [],
+        "title": "应用概览",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 10
+        },
+        "id": 9,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT SUM(total_count) FROM __otel_traces_services_red_metrics_1h WHERE ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime )  AND service_name = '$service'\n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "请求数",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "red"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 10
+        },
+        "id": 10,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT SUM(error_count) FROM __otel_traces_services_red_metrics_1h WHERE ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime )  AND service_name = '$service'",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "错误数",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 10
+        },
+        "id": 11,
+        "options": {
+          "colorMode": "value",
+          "graphMode": "area",
+          "justifyMode": "auto",
+          "orientation": "auto",
+          "percentChangeColorMode": "standard",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "/.*/",
+            "values": false
+          },
+          "showPercentChange": false,
+          "textMode": "auto",
+          "wideLayout": true
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT ROUND(avg(avg_latency_nano)/1000000.0, 2) FROM __otel_traces_services_red_metrics_1h WHERE ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime ) AND service_name = '$service'",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "平均延迟",
+        "type": "stat"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 0,
+          "y": 16
+        },
+        "id": 12,
+        "options": {
+          "barRadius": 0,
+          "barWidth": 0.28,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "auto",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xField": "time_window_1m",
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": -100
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "hide": false,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT total_count,time_window_1m FROM __otel_traces_services_red_metrics_1m WHERE service_name = '$service' AND ( time_window_1m >= $__fromTime AND time_window_1m <= $__toTime ) \n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "请求数/1m",
+        "type": "barchart"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 6,
+          "y": 16
+        },
+        "id": 13,
+        "options": {
+          "barRadius": 0,
+          "barWidth": 0.28,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "auto",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xField": "time_window_1m",
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": -100
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "hide": false,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT error_count,time_window_1m FROM __otel_traces_services_red_metrics_1m WHERE service_name = '$service' AND ( time_window_1m >= $__fromTime AND time_window_1m <= $__toTime ) \n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "错误数/1m",
+        "type": "barchart"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "barWidthFactor": 0.6,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "insertNulls": false,
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 6,
+          "x": 12,
+          "y": 16
+        },
+        "id": 14,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          }
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "hide": false,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT ROUND(avg_latency_nano / 1000000.0, 2) as latency_ms , time_window_1m FROM __otel_traces_services_red_metrics_1m WHERE service_name = '$service' AND ( time_window_1m >= $__fromTime AND time_window_1m <= $__toTime ) \n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "延迟/1m",
+        "type": "timeseries"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 0,
+          "y": 23
+        },
+        "id": 16,
+        "options": {
+          "barRadius": 0,
+          "barWidth": 0.28,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "horizontal",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xField": "span_name",
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": -100
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "hide": false,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT\n    span_name,\n    SUM(total_count) AS total_count,\nFROM \n    __otel_traces_spans_red_metrics_1h\nWHERE \n    ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime )  AND service_name = '$service'\nGROUP BY \n    span_name\nORDER BY \n    SUM(total_count) DESC\nLIMIT 5;",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "请求数提供服务排行（Top5）",
+        "type": "barchart"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 6,
+          "y": 23
+        },
+        "id": 17,
+        "options": {
+          "barRadius": 0,
+          "barWidth": 0.28,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "horizontal",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xField": "span_name",
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": -100
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "hide": false,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT\n    span_name,\n    SUM(error_count) AS error_count,\nFROM \n    __otel_traces_spans_red_metrics_1h\nWHERE \n   ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime )  AND service_name = '$service'\nGROUP BY \n    span_name\nORDER BY \n    SUM(error_count) DESC\nLIMIT 5;",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "错误数提供服务排行（Top5）",
+        "type": "barchart"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisBorderShow": false,
+              "axisCenteredZero": false,
+              "axisColorMode": "text",
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "fillOpacity": 80,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineWidth": 1,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 6,
+          "w": 6,
+          "x": 12,
+          "y": 23
+        },
+        "id": 18,
+        "options": {
+          "barRadius": 0,
+          "barWidth": 0.28,
+          "fullHighlight": false,
+          "groupWidth": 0.7,
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom",
+            "showLegend": true
+          },
+          "orientation": "horizontal",
+          "showValue": "auto",
+          "stacking": "none",
+          "tooltip": {
+            "hideZeros": false,
+            "mode": "single",
+            "sort": "none"
+          },
+          "xField": "span_name",
+          "xTickLabelRotation": 0,
+          "xTickLabelSpacing": -100
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "hide": false,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT\n    span_name,\n    round(avg(avg_latency_nano) / 1000000.0, 2) AS latency,\nFROM \n    __otel_traces_spans_red_metrics_1h\nWHERE \n    ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime ) AND service_name = '$service'\nGROUP BY \n    span_name\nORDER BY \n    latency DESC\nLIMIT 5;",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "平均耗时提供服务排行（Top5）",
+        "type": "barchart"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 29
+        },
+        "id": 15,
+        "panels": [],
+        "title": "应用拓扑",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "greptimedb-mysql"
+        },
+        "fieldConfig": {
+          "defaults": {},
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 16,
+          "w": 24,
+          "x": 0,
+          "y": 30
+        },
+        "id": 6,
+        "options": {
+          "edges": {},
+          "nodes": {},
+          "zoomMode": "cooperative"
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "editorMode": "code",
+            "format": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT \n    CONCAT(parent_service, '->', child_service) AS id,\n    parent_service AS source,\n    child_service AS target,\n    call_count AS mainstat,\n    call_count AS value\nFROM \n    __otel_traces_dependencies_1h\n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "应用拓扑",
+        "type": "nodeGraph"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 46
+        },
+        "id": 20,
+        "panels": [],
+        "title": "依赖服务",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "inspect": false
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 4,
+          "w": 24,
+          "x": 0,
+          "y": 47
+        },
+        "id": 21,
+        "options": {
+          "cellHeight": "sm",
+          "footer": {
+            "countRows": false,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "sql",
+            "format": 1,
+            "meta": {
+              "builderOptions": {
+                "columns": [],
+                "database": "",
+                "limit": 1000,
+                "meta": {},
+                "mode": "list",
+                "queryType": "table",
+                "table": ""
+              }
+            },
+            "pluginVersion": "2.0.1",
+            "queryType": "table",
+            "rawQuery": true,
+            "rawSql": "SELECT DISTINCT(child_service) as dependency FROM __otel_traces_dependencies_1h WHERE parent_service = '$service' AND ( time_window_1h >= $__fromTime AND time_window_1h <= $__toTime )\n",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "依赖服务",
+        "type": "table"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 51
+        },
+        "id": 19,
+        "panels": [],
+        "title": "调用分析",
+        "type": "row"
+      },
+      {
+        "datasource": {
+          "type": "mysql",
+          "uid": "${ds}"
+        },
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "custom": {
+              "align": "auto",
+              "cellOptions": {
+                "type": "auto"
+              },
+              "filterable": false,
+              "inspect": false
+            },
+            "links": [
+              {
+                "targetBlank": true,
+                "title": "",
+                "url": "http://localhost:3000/explore?left={\"datasource\":\"greptimedb-jaeger\",\"queries\":[{\"query\":\"${__data.fields.trace_id}\"}]}"
+              }
+            ],
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green"
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "应用名称"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 128
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "trace_id"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 355
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "接口名称"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 139
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "延迟"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 160
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "状态"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 100
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "状态码"
+              },
+              "properties": [
+                {
+                  "id": "custom.width",
+                  "value": 109
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 11,
+          "w": 24,
+          "x": 0,
+          "y": 52
+        },
+        "id": 1,
+        "options": {
+          "cellHeight": "md",
+          "footer": {
+            "countRows": false,
+            "enablePagination": true,
+            "fields": "",
+            "reducer": [
+              "sum"
+            ],
+            "show": false
+          },
+          "showHeader": true,
+          "sortBy": [
+            {
+              "desc": true,
+              "displayName": "接口名称"
+            }
+          ]
+        },
+        "pluginVersion": "11.6.0",
+        "targets": [
+          {
+            "builderOptions": {
+              "columns": [
+                {
+                  "alias": "trace_id",
+                  "hint": "trace_id",
+                  "name": "trace_id",
+                  "type": "String"
+                },
+                {
+                  "alias": "span_id",
+                  "hint": "trace_span_id",
+                  "name": "span_id",
+                  "type": "String"
+                },
+                {
+                  "alias": "parent_span_id",
+                  "hint": "trace_parent_span_id",
+                  "name": "parent_span_id",
+                  "type": "String"
+                },
+                {
+                  "alias": "service_name",
+                  "hint": "trace_service_name",
+                  "name": "service_name",
+                  "type": "String"
+                },
+                {
+                  "alias": "span_name",
+                  "hint": "trace_operation_name",
+                  "name": "span_name",
+                  "type": "String"
+                },
+                {
+                  "alias": "timestamp",
+                  "hint": "time",
+                  "name": "timestamp",
+                  "type": "TimestampNanosecond"
+                },
+                {
+                  "alias": "duration_nano",
+                  "hint": "trace_duration_time",
+                  "name": "duration_nano",
+                  "type": "UInt64"
+                }
+              ],
+              "database": "public",
+              "filters": [
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "hint": "time",
+                  "key": "",
+                  "operator": "WITH IN DASHBOARD TIME RANGE",
+                  "type": "datetime"
+                },
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "key": "service_name",
+                  "label": "service_name",
+                  "operator": "=",
+                  "type": "String",
+                  "value": "'$service'"
+                }
+              ],
+              "limit": 1000,
+              "meta": {
+                "isTraceIdMode": false,
+                "traceDurationUnit": "nanoseconds",
+                "traceId": ""
+              },
+              "mode": "list",
+              "orderBy": [
+                {
+                  "default": true,
+                  "dir": "DESC",
+                  "hint": "time",
+                  "name": ""
+                },
+                {
+                  "default": true,
+                  "dir": "DESC",
+                  "hint": "trace_duration_time",
+                  "name": ""
+                }
+              ],
+              "queryType": "traces",
+              "table": "opentelemetry_traces"
+            },
+            "dataset": "information_schema",
+            "datasource": {
+              "type": "mysql",
+              "uid": "${ds}"
+            },
+            "editorMode": "code",
+            "editorType": "builder",
+            "format": 1,
+            "pluginVersion": "2.0.1",
+            "rawQuery": true,
+            "rawSql": "SELECT \"trace_id\" as traceID, \"service_name\" as serviceName, \"span_name\" as operationName, \"timestamp\" as startTime, FLOOR(\"duration_nano\" * 0.000001) AS duration FROM \"public\".\"opentelemetry_traces\" WHERE ( timestamp >= $__fromTime AND timestamp <= $__toTime ) AND ( service_name = '$service' ) ORDER BY timestamp DESC, duration_nano DESC LIMIT 1000",
+            "refId": "A",
+            "sql": {
+              "columns": [
+                {
+                  "parameters": [],
+                  "type": "function"
+                }
+              ],
+              "groupBy": [
+                {
+                  "property": {
+                    "type": "string"
+                  },
+                  "type": "groupBy"
+                }
+              ],
+              "limit": 50
+            }
+          }
+        ],
+        "title": "Span 列表",
+        "type": "table"
+      }
+    ],
+    "preload": false,
+    "refresh": "",
+    "schemaVersion": 41,
+    "tags": [],
+    "templating": {
+      "list": [
+        {
+          "current": {
+            "text": "greptimedb",
+            "value": "PC5A6C36A21FB9380"
+          },
+          "name": "ds",
+          "options": [],
+          "query": "info8fcc-greptimedb-datasource",
+          "refresh": 1,
+          "regex": "",
+          "type": "datasource"
+        },
+        {
+          "current": {
+            "text": "customer",
+            "value": "customer"
+          },
+          "datasource": {
+            "type": "mysql",
+            "uid": "${ds}"
+          },
+          "definition": "SELECT DISTINCT(service_name) FROM opentelemetry_traces_services;",
+          "label": "应用名称",
+          "name": "service",
+          "options": [],
+          "query": "SELECT DISTINCT(service_name) FROM opentelemetry_traces_services;",
+          "refresh": 1,
+          "regex": "",
+          "type": "query"
+        },
+        {
+          "allValue": "'all'",
+          "current": {
+            "text": "All",
+            "value": [
+              "$__all"
+            ]
+          },
+          "datasource": {
+            "type": "mysql",
+            "uid": "${ds}"
+          },
+          "definition": "SELECT DISTINCT(span_name) FROM opentelemetry_traces WHERE service_name = '$service'",
+          "includeAll": true,
+          "label": "接口名称",
+          "multi": true,
+          "name": "span_name",
+          "options": [],
+          "query": "SELECT DISTINCT(span_name) FROM opentelemetry_traces WHERE service_name = '$service'",
+          "refresh": 1,
+          "regex": "",
+          "type": "query"
+        },
+        {
+          "current": {
+            "text": "200",
+            "value": "200"
+          },
+          "label": "状态码",
+          "name": "status_code",
+          "options": [],
+          "query": "",
+          "type": "custom"
+        }
+      ]
+    },
+    "time": {
+      "from": "now-12h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "browser",
+    "title": "GreptimeDB-Plugins-Traces",
+    "uid": "eek0mtd8jq58g3",
+    "version": 7
+  }
+  

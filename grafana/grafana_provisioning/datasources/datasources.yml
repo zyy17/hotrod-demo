@@ -22,3 +22,7 @@ datasources:
     version: 1
     editable: true
     url: http://greptimedb:4000
+    jsonData:
+      host: http://greptimedb:4000
+      database: "public"
+      username: ""

@@ -1,0 +1,495 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": {
+          "type": "grafana",
+          "uid": "-- Grafana --"
+        },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": 3,
+  "links": [],
+  "panels": [
+    {
+      "datasource": {
+        "type": "mysql",
+        "uid": "${ds}"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisGridShow": true,
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "fillOpacity": 63,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineWidth": 0,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "barRadius": 0,
+        "barWidth": 0.35,
+        "fullHighlight": true,
+        "groupWidth": 0.7,
+        "legend": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": false
+        },
+        "orientation": "auto",
+        "showValue": "auto",
+        "stacking": "normal",
+        "tooltip": {
+          "hideZeros": false,
+          "mode": "single",
+          "sort": "none"
+        },
+        "xField": "time_bucket",
+        "xTickLabelRotation": 0,
+        "xTickLabelSpacing": 100
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "dataset": "information_schema",
+          "datasource": {
+            "type": "mysql",
+            "uid": "${ds}"
+          },
+          "editorMode": "code",
+          "editorType": "sql",
+          "format": 1,
+          "meta": {
+            "builderOptions": {
+              "columns": [],
+              "database": "",
+              "limit": 1000,
+              "meta": {},
+              "mode": "list",
+              "queryType": "table",
+              "table": ""
+            }
+          },
+          "pluginVersion": "2.0.1",
+          "queryType": "table",
+          "rawQuery": true,
+          "rawSql": "SELECT date_bin('60 seconds',greptime_timestamp) \n  AS time_bucket, COUNT(*) AS events FROM hotrod_logs \nWHERE ( greptime_timestamp >= $__fromTime AND greptime_timestamp <= $__toTime)\n  AND msg LIKE '%$search%' AND service = '${service}'\nGROUP BY time_bucket \nORDER BY time_bucket \nASC limit 200;\n",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
+      "title": "Logs Volume",
+      "type": "barchart"
+    },
+    {
+      "datasource": {
+        "type": "info8fcc-greptimedb-datasource",
+        "uid": "PC5A6C36A21FB9380"
+      },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 14,
+        "w": 24,
+        "x": 0,
+        "y": 7
+      },
+      "id": 1,
+      "options": {
+        "dedupStrategy": "none",
+        "enableInfiniteScrolling": false,
+        "enableLogDetails": true,
+        "prettifyLogMessage": false,
+        "showCommonLabels": false,
+        "showLabels": false,
+        "showTime": true,
+        "sortOrder": "Descending",
+        "wrapLogMessage": false
+      },
+      "pluginVersion": "11.6.0",
+      "targets": [
+        {
+          "builderOptions": {
+            "columns": [
+              {
+                "alias": "caller",
+                "custom": false,
+                "name": "caller",
+                "type": "String"
+              },
+              {
+                "alias": "host",
+                "custom": false,
+                "name": "host",
+                "type": "String"
+              },
+              {
+                "alias": "method",
+                "custom": false,
+                "name": "method",
+                "type": "String"
+              },
+              {
+                "alias": "service",
+                "custom": false,
+                "name": "service",
+                "type": "String"
+              },
+              {
+                "alias": "source_type",
+                "custom": false,
+                "name": "source_type",
+                "type": "String"
+              },
+              {
+                "alias": "span_id",
+                "custom": false,
+                "name": "span_id",
+                "type": "String"
+              },
+              {
+                "alias": "trace_id",
+                "custom": false,
+                "name": "trace_id",
+                "type": "String"
+              },
+              {
+                "alias": "url",
+                "custom": false,
+                "name": "url",
+                "type": "String"
+              },
+              {
+                "hint": "time",
+                "name": "greptime_timestamp",
+                "type": "TimestampNanosecond"
+              },
+              {
+                "alias": "level",
+                "hint": "log_level",
+                "name": "level",
+                "type": "String"
+              },
+              {
+                "alias": "msg",
+                "hint": "log_message",
+                "name": "msg",
+                "type": "String"
+              }
+            ],
+            "database": "public",
+            "filters": [
+              {
+                "condition": "AND",
+                "filterType": "custom",
+                "hint": "time",
+                "key": "",
+                "operator": "WITH IN DASHBOARD TIME RANGE",
+                "type": "datetime"
+              },
+              {
+                "condition": "AND",
+                "filterType": "custom",
+                "hint": "log_level",
+                "key": "",
+                "operator": "IS ANYTHING",
+                "type": "string"
+              },
+              {
+                "condition": "AND",
+                "filterType": "custom",
+                "key": "service",
+                "label": "service",
+                "operator": "=",
+                "type": "String",
+                "value": "'$service'"
+              },
+              {
+                "condition": "AND",
+                "filterType": "custom",
+                "key": "",
+                "operator": "IS ANYTHING",
+                "type": ""
+              }
+            ],
+            "limit": 1000,
+            "meta": {
+              "logMessageLike": "",
+              "otelEnabled": false
+            },
+            "mode": "list",
+            "orderBy": [
+              {
+                "default": true,
+                "dir": "DESC",
+                "hint": "time",
+                "name": ""
+              }
+            ],
+            "queryType": "logs",
+            "table": "hotrod_logs"
+          },
+          "datasource": {
+            "type": "info8fcc-greptimedb-datasource",
+            "uid": "PC5A6C36A21FB9380"
+          },
+          "editorType": "sql",
+          "format": 2,
+          "meta": {
+            "builderOptions": {
+              "columns": [
+                {
+                  "alias": "caller",
+                  "custom": false,
+                  "name": "caller",
+                  "type": "String"
+                },
+                {
+                  "alias": "host",
+                  "custom": false,
+                  "name": "host",
+                  "type": "String"
+                },
+                {
+                  "alias": "method",
+                  "custom": false,
+                  "name": "method",
+                  "type": "String"
+                },
+                {
+                  "alias": "service",
+                  "custom": false,
+                  "name": "service",
+                  "type": "String"
+                },
+                {
+                  "alias": "source_type",
+                  "custom": false,
+                  "name": "source_type",
+                  "type": "String"
+                },
+                {
+                  "alias": "span_id",
+                  "custom": false,
+                  "name": "span_id",
+                  "type": "String"
+                },
+                {
+                  "alias": "trace_id",
+                  "custom": false,
+                  "name": "trace_id",
+                  "type": "String"
+                },
+                {
+                  "alias": "url",
+                  "custom": false,
+                  "name": "url",
+                  "type": "String"
+                },
+                {
+                  "hint": "time",
+                  "name": "greptime_timestamp",
+                  "type": "TimestampNanosecond"
+                },
+                {
+                  "alias": "level",
+                  "hint": "log_level",
+                  "name": "level",
+                  "type": "String"
+                },
+                {
+                  "alias": "msg",
+                  "hint": "log_message",
+                  "name": "msg",
+                  "type": "String"
+                }
+              ],
+              "database": "public",
+              "filters": [
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "hint": "time",
+                  "key": "",
+                  "operator": "WITH IN DASHBOARD TIME RANGE",
+                  "type": "datetime"
+                },
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "hint": "log_level",
+                  "key": "",
+                  "operator": "IS ANYTHING",
+                  "type": "string"
+                },
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "key": "service",
+                  "label": "service",
+                  "operator": "=",
+                  "type": "String",
+                  "value": "'$service'"
+                },
+                {
+                  "condition": "AND",
+                  "filterType": "custom",
+                  "key": "",
+                  "operator": "IS ANYTHING",
+                  "type": ""
+                }
+              ],
+              "limit": 1000,
+              "meta": {
+                "logMessageLike": "",
+                "otelEnabled": false
+              },
+              "mode": "list",
+              "orderBy": [
+                {
+                  "default": true,
+                  "dir": "DESC",
+                  "hint": "time",
+                  "name": ""
+                }
+              ],
+              "queryType": "logs",
+              "table": "hotrod_logs"
+            }
+          },
+          "pluginVersion": "2.0.1",
+          "queryType": "logs",
+          "rawSql": "SELECT greptime_timestamp as \"timestamp\", \n       msg as \"body\", level, caller, host, method, service, source_type, span_id, trace_id, url FROM \"public\".\"hotrod_logs\" \nWHERE ( greptime_timestamp >= $__fromTime AND greptime_timestamp <= $__toTime) \nAND msg LIKE '%$search%' AND service = '${service}'\nORDER BY greptime_timestamp DESC LIMIT 1000",
+          "refId": "A"
+        }
+      ],
+      "title": "Logs",
+      "type": "logs"
+    }
+  ],
+  "preload": false,
+  "schemaVersion": 41,
+  "tags": [],
+  "templating": {
+    "list": [
+      {
+        "current": {
+          "text": "greptimedb",
+          "value": "PC5A6C36A21FB9380"
+        },
+        "name": "ds",
+        "options": [],
+        "query": "info8fcc-greptimedb-datasource",
+        "refresh": 1,
+        "regex": "",
+        "type": "datasource"
+      },
+      {
+        "current": {
+          "text": "frontend",
+          "value": "frontend"
+        },
+        "definition": "SELECT DISTINCT(service) FROM hotrod_logs WHERE service IS NOT NULL",
+        "label": "应用名称",
+        "name": "service",
+        "options": [],
+        "query": "SELECT DISTINCT(service) FROM hotrod_logs WHERE service IS NOT NULL",
+        "refresh": 1,
+        "regex": "",
+        "type": "query"
+      },
+      {
+        "current": {
+          "text": "",
+          "value": ""
+        },
+        "name": "search",
+        "options": [
+          {
+            "selected": true,
+            "text": "",
+            "value": ""
+          }
+        ],
+        "query": "",
+        "type": "textbox"
+      }
+    ]
+  },
+  "time": {
+    "from": "now-5m",
+    "to": "now"
+  },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "GreptimeDB-Plugin-Logs",
+  "uid": "bemd0k1hgmsxsb",
+  "version": 2
+}
