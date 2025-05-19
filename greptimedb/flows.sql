@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS `__otel_traces_services_red_metrics_1m` (
   `total_count` BIGINT NULL,
   `error_count` BIGINT NULL,
   `avg_latency_nano` DOUBLE NULL,
-  `time_window_1m` TIMESTAMP time index,
+  `latency_sketch` BINARY,
+  `time_window` TIMESTAMP time index,
   `update_at` TIMESTAMP NULL,
   PRIMARY KEY (`service_name`)
 );
@@ -19,9 +20,10 @@ SELECT
     count(*) as `total_count`,
     sum(case when `span_status_code` = 'STATUS_CODE_ERROR' then 1 else 0 end) as `error_count`,
     avg(`duration_nano`) as `avg_latency_nano`,
-    date_bin('1 minutes'::INTERVAL, `timestamp`, '2025-05-17 00:00:00') as `time_window_1m`
+    uddsketch_state(128, 0.01, "duration_nano") AS `latency_sketch`,
+    date_bin('1 minutes'::INTERVAL, `timestamp`, '2025-05-17 00:00:00') as `time_window`
 FROM `opentelemetry_traces`
-GROUP BY `service_name`, `time_window_1m`;
+GROUP BY `service_name`, `time_window`;
 
 -- Calculate total requests, error requests, and average latency for each Service in 1h time window.
 CREATE TABLE IF NOT EXISTS `__otel_traces_services_red_metrics_1h` (
@@ -29,7 +31,8 @@ CREATE TABLE IF NOT EXISTS `__otel_traces_services_red_metrics_1h` (
   `total_count` BIGINT NULL,
   `error_count` BIGINT NULL,
   `avg_latency_nano` DOUBLE NULL,
-  `time_window_1h` TIMESTAMP time index,
+  `latency_sketch` BINARY,
+  `time_window` TIMESTAMP time index,
   `update_at` TIMESTAMP NULL,
   PRIMARY KEY (`service_name`)
 );
@@ -44,9 +47,10 @@ SELECT
     sum(`total_count`) as `total_count`,
     sum(`error_count`) as `error_count`,
     avg(`avg_latency_nano`) as `avg_latency_nano`,
-    date_bin('1 hour'::INTERVAL, `time_window_1m`, '2025-05-17 00:00:00') as `time_window_1h`
+    uddsketch_merge(128, 0.01, `latency_sketch`) AS `latency_sketch`,
+    date_bin('1 hour'::INTERVAL, `time_window`, '2025-05-17 00:00:00') as `time_window`
 FROM `__otel_traces_services_red_metrics_1m`
-GROUP BY `service_name`, `time_window_1h`;
+GROUP BY `service_name`, `time_window`;
 
 -- Calculate total requests, error requests, and average latency for each Span in 1m time window.
 CREATE TABLE IF NOT EXISTS `__otel_traces_spans_red_metrics_1m` (
@@ -56,7 +60,8 @@ CREATE TABLE IF NOT EXISTS `__otel_traces_spans_red_metrics_1m` (
   `total_count` BIGINT NULL,
   `error_count` BIGINT NULL,
   `avg_latency_nano` DOUBLE NULL,
-  `time_window_1m` TIMESTAMP time index,
+  `latency_sketch` BINARY,
+  `time_window` TIMESTAMP time index,
   `update_at` TIMESTAMP NULL,
   PRIMARY KEY (`service_name`)
 );
@@ -73,9 +78,10 @@ SELECT
     count(*) as `total_count`,
     sum(case when `span_status_code` = 'STATUS_CODE_ERROR' then 1 else 0 end) as `error_count`,
     avg(`duration_nano`) as `avg_latency_nano`,
-    date_bin('1 minutes'::INTERVAL, `timestamp`, '2025-05-17 00:00:00') as `time_window_1m`
+    uddsketch_state(128, 0.01, "duration_nano") AS `latency_sketch`,
+    date_bin('1 minutes'::INTERVAL, `timestamp`, '2025-05-17 00:00:00') as `time_window`
 FROM `opentelemetry_traces`
-GROUP BY `service_name`, `span_name`, `span_kind`, `time_window_1m`;
+GROUP BY `service_name`, `span_name`, `span_kind`, `time_window`;
 
 -- Calculate total requests, error requests, and average latency for each Span in 1h time window.
 CREATE TABLE IF NOT EXISTS `__otel_traces_spans_red_metrics_1h` (
@@ -85,7 +91,8 @@ CREATE TABLE IF NOT EXISTS `__otel_traces_spans_red_metrics_1h` (
   `total_count` BIGINT NULL,
   `error_count` BIGINT NULL,
   `avg_latency_nano` DOUBLE NULL,
-  `time_window_1h` TIMESTAMP time index,
+  `latency_sketch` BINARY,
+  `time_window` TIMESTAMP time index,
   `update_at` TIMESTAMP NULL,
   PRIMARY KEY (`service_name`)
 );
@@ -102,16 +109,17 @@ SELECT
     sum(`total_count`) as `total_count`,
     sum(`error_count`) as `error_count`,
     avg(`avg_latency_nano`) as `avg_latency_nano`,
-    date_bin('1 hour'::INTERVAL, `time_window_1m`, '2025-05-17 00:00:00') as `time_window_1h`
+    uddsketch_merge(128, 0.01, `latency_sketch`) AS `latency_sketch`,
+    date_bin('1 hour'::INTERVAL, `time_window`, '2025-05-17 00:00:00') as `time_window`
 FROM `__otel_traces_spans_red_metrics_1m`
-GROUP BY `service_name`, `span_name`, `span_kind`, `time_window_1h`;
+GROUP BY `service_name`, `span_name`, `span_kind`, `time_window`;
 
 -- Aggregate dependencies between Services.
 CREATE TABLE IF NOT EXISTS `__otel_traces_dependencies_1h` (
   `parent_service` STRING NULL,
   `child_service` STRING NULL,
   `call_count` BIGINT NULL,
-  `time_window_1h` TIMESTAMP time index,
+  `time_window` TIMESTAMP time index,
   `update_at` TIMESTAMP NULL,
   PRIMARY KEY (`parent_service`, `child_service`)
 );
@@ -125,8 +133,8 @@ SELECT
     `parent`.`service_name` AS `parent_service`,
     `child`.`service_name` AS `child_service`,
     COUNT(*) AS `call_count`,
-    date_bin('1 hour'::INTERVAL, `parent`.`timestamp`, '2025-05-17 00:00:00') as `time_window_1h`
+    date_bin('1 hour'::INTERVAL, `parent`.`timestamp`, '2025-05-17 00:00:00') as `time_window`
 FROM `opentelemetry_traces` AS `child`
 JOIN `opentelemetry_traces` AS `parent` ON `child`.`parent_span_id` = `parent`.`span_id`
 WHERE `parent`.`service_name` != `child`.`service_name`
-GROUP BY `parent_service`, `child_service`, `time_window_1h`;
+GROUP BY `parent_service`, `child_service`, `time_window`;
