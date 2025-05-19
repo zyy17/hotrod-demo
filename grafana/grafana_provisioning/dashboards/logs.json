@@ -18,7 +18,7 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
+  "id": 1,
   "links": [],
   "panels": [
     {
@@ -108,7 +108,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT date_bin('60 seconds',greptime_timestamp) \n  AS time_bucket, COUNT(*) AS events FROM hotrod \nWHERE\n  greptime_timestamp BETWEEN $__timeFrom() AND $__timeTo() \n  AND (\n    \"$search\" = \"\"\n    OR msg LIKE '%$search%')\n  AND (\n     \"$service\" = \"\"\n    OR service = '$service'\n  )\nGROUP BY time_bucket \nORDER BY time_bucket \nASC limit 200;\n",
+          "rawSql": "SELECT date_bin('60 seconds',greptime_timestamp) \n  AS time_bucket, COUNT(*) AS events FROM hotrod_logs \nWHERE\n  $__timeFilter(greptime_timestamp)\n  AND (\n    \"$search\" = \"\"\n    OR msg LIKE '%$search%')\n  AND (\n     \"$service\" = \"\"\n    OR service = '$service'\n  )\nGROUP BY time_bucket \nORDER BY time_bucket \nASC limit 200;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -170,7 +170,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n  greptime_timestamp,msg,\n  level,host,span_id,trace_id\nFROM \n  hotrod\nWHERE \n  greptime_timestamp BETWEEN $__timeFrom() AND $__timeTo()\nAND (\n    \"$search\" = \"\"\n    OR msg LIKE '%$search%'\n)\nAND (\n    \"$service\" = \"\"\n    OR service = '$service'\n)\nORDER BY \n  greptime_timestamp DESC \nLIMIT 100;\n",
+          "rawSql": "SELECT \n  greptime_timestamp,msg,\n  level,host,span_id,trace_id\nFROM \n  hotrod_logs\nWHERE \n  $__timeFilter(greptime_timestamp)\nAND (\n    \"$search\" = \"\"\n    OR msg LIKE '%$search%'\n)\nAND (\n    \"$service\" = \"\"\n    OR service = '$service'\n)\nORDER BY \n  greptime_timestamp DESC \nLIMIT 100;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -222,11 +222,11 @@
           "type": "mysql",
           "uid": "${ds}"
         },
-        "definition": "SELECT DISTINCT(service) FROM hotrod WHERE service IS NOT NULL",
+        "definition": "SELECT DISTINCT(service) FROM hotrod_logs WHERE service IS NOT NULL",
         "label": "应用名称",
         "name": "service",
         "options": [],
-        "query": "SELECT DISTINCT(service) FROM hotrod WHERE service IS NOT NULL",
+        "query": "SELECT DISTINCT(service) FROM hotrod_logs WHERE service IS NOT NULL",
         "refresh": 1,
         "regex": "",
         "type": "query"
