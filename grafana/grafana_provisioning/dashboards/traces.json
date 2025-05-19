@@ -113,7 +113,12 @@
           "show": false
         },
         "showHeader": true,
-        "sortBy": []
+        "sortBy": [
+          {
+            "desc": true,
+            "displayName": "每秒请求数"
+          }
+        ]
       },
       "pluginVersion": "11.6.0",
       "targets": [
@@ -126,7 +131,7 @@
           "editorMode": "code",
           "format": "table",
           "rawQuery": true,
-          "rawSql": "SELECT \n  service_name AS \"应用名称\",\n  CAST(COUNT(*) AS FLOAT) / (${__to:date:seconds} - ${__from:date:seconds}) AS \"每秒请求数\",\n  CONCAT(SUM(CASE WHEN `span_attributes.http.status_code` != '200' AND `span_attributes.http.status_code` IS NULL THEN 1 ELSE 0 END) / COUNT(*) * 100.0, '%') AS \"错误率\",\n  CONCAT(ROUND(AVG(duration_nano) / 1000000.0, 2), ' ms') AS \"平均延迟\"\nFROM \n  opentelemetry_traces\nWHERE \n  $__timeFilter(timestamp)\nGROUP BY service_name\nORDER BY service_name;\n",
+          "rawSql": "SELECT \n    t1.service_name AS \"应用名称\",\n    CAST(t1.total_count AS FLOAT) / 60 AS \"每秒请求数\",\n    CONCAT(ROUND(t1.error_count / t1.total_count * 100.0, 2), '%') AS \"错误率\",\n    CONCAT(ROUND(t1.avg_latency_nano / 1000000.0, 2), ' ms') AS \"平均延迟\"\nFROM \n    __otel_traces_services_red_metrics_1m t1\nWHERE \n    t1.update_at = (\n        SELECT MAX(t2.update_at)\n        FROM __otel_traces_services_red_metrics_1m t2\n        WHERE t2.service_name = t1.service_name\n    )\nORDER BY \n    t1.service_name;\n",
           "refId": "A",
           "sql": {
             "columns": [
@@ -201,123 +206,6 @@
       ],
       "title": "应用拓扑",
       "type": "nodeGraph"
-    },
-    {
-      "datasource": {
-        "type": "mysql",
-        "uid": "${ds}"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "barWidthFactor": 0.6,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "always",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "reqps"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 13,
-        "w": 24,
-        "x": 0,
-        "y": 19
-      },
-      "id": 5,
-      "options": {
-        "legend": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "displayMode": "table",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "tooltip": {
-          "hideZeros": false,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.6.0",
-      "targets": [
-        {
-          "dataset": "information_schema",
-          "datasource": {
-            "type": "mysql",
-            "uid": "${ds}"
-          },
-          "editorMode": "code",
-          "format": "time_series",
-          "rawQuery": true,
-          "rawSql": "SELECT span_name, COUNT(*) / 60.0 AS rps, date_bin('60 seconds', timestamp) \n  AS time FROM opentelemetry_traces \nWHERE\n  $__timeFilter(timestamp) AND\n  service_name = '$service'  \nGROUP BY span_name, time, \nORDER BY time",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
-        }
-      ],
-      "title": "应用接口 RPS",
-      "type": "timeseries"
     },
     {
       "datasource": {
@@ -433,7 +321,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 19
       },
       "id": 1,
       "options": {
