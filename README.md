@@ -16,3 +16,9 @@ The `hotrod` service is a simple HTTP service that simulates a customer service:
 
 - Grafana: `http://localhost:3000`
 - Hotrod: `http://localhost:8080`
+
+If you want clean up the environment, you can run:
+
+```console
+rm -rf ./data
+```
